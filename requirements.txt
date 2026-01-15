@@ -6,3 +6,4 @@ backtrader>=1.9.78.123
 pandas>=1.5.0
 numpy>=1.24.0
 tushare>=1.2.89
+akshare>=1.10.0
