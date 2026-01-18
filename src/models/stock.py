@@ -1,6 +1,3 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float, Text, Date, BigInteger, DECIMAL
-from sqlalchemy.orm import relationship
-from datetime import datetime
 from models import *
 """ 个股相关模型定义 """
 
