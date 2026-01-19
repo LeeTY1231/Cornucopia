@@ -1,11 +1,10 @@
 import sys
 import argparse
 from datetime import datetime
+from venv import logger
+from flask import Flask
+from src.controllers.stock_controller import stock_controller
 from src.data.data_manager import DataManager
-
-# 初始化日志系统
-setup_logger()
-logger = get_logger(__name__)
 
 """
 Cornucopia
@@ -17,6 +16,22 @@ Email: lty15517502979@163.com
 StartTime: 2026-01-18
 Version: 1.0.0
 """
+def Interface():
+    interface = Flask(__name__)
+    interface.register_blueprint(stock_controller)
+    @interface.route('/')
+    def index():
+        return {
+            "service": "Cornucopia Stock API",
+            "version": "1.0.0",
+            "description": "基于Python的股票交易系统API服务"
+        }
+    return interface
+
+def main():
+    app = Interface()
+    app.run(host='localhost', port=5038, debug=True)
+
 
 if __name__ == "__main__":
     try:

@@ -1,11 +1,12 @@
 import os
+from urllib.parse import quote_plus
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class DatabaseConfig:
     # PostgreSQL连接配置
-    POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
+    POSTGRES_HOST = os.getenv('POSTGRES_HOST', '127.0.0.1')
     POSTGRES_PORT = os.getenv('POSTGRES_PORT', '5432')
     POSTGRES_DB = os.getenv('POSTGRES_DB', 'cornucopia')
     POSTGRES_USER = os.getenv('POSTGRES_USER', 'admin')
@@ -13,7 +14,7 @@ class DatabaseConfig:
     @classmethod
     def get_database_url(cls):
         """获取数据库连接URL"""
-        return f"postgresql://{cls.POSTGRES_USER}:{cls.POSTGRES_PASSWORD}@{cls.POSTGRES_HOST}:{cls.POSTGRES_PORT}/{cls.POSTGRES_DB}"
+        return f"postgresql://{cls.POSTGRES_USER}:{quote_plus(cls.POSTGRES_PASSWORD)}@{cls.POSTGRES_HOST}:{cls.POSTGRES_PORT}/{cls.POSTGRES_DB}"
     # 连接池配置
     POOL_SIZE = int(os.getenv('DB_POOL_SIZE', '5'))
     MAX_OVERFLOW = int(os.getenv('DB_MAX_OVERFLOW', '10'))

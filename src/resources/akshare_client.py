@@ -2,54 +2,15 @@
 AkShare数据客户端
 提供免费的股票数据获取功能
 """
-
 import os
 from contextlib import contextmanager
+from venv import logger
 
 import akshare as ak
 import pandas as pd
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 import time
-
-
-@contextmanager
-def _temporary_disable_proxies():
-    """临时禁用系统代理环境变量（用于处理本地代理未启动导致的请求失败）。"""
-    keys = [
-        "HTTP_PROXY",
-        "HTTPS_PROXY",
-        "ALL_PROXY",
-        "NO_PROXY",
-        "http_proxy",
-        "https_proxy",
-        "all_proxy",
-        "no_proxy",
-    ]
-    old = {k: os.environ.get(k) for k in keys if k in os.environ}
-
-    try:
-        for k in [
-            "HTTP_PROXY",
-            "HTTPS_PROXY",
-            "ALL_PROXY",
-            "http_proxy",
-            "https_proxy",
-            "all_proxy",
-        ]:
-            os.environ.pop(k, None)
-        # 保险起见：全量绕过代理
-        os.environ["NO_PROXY"] = "*"
-        os.environ["no_proxy"] = "*"
-        yield
-    finally:
-        # 还原原环境变量
-        for k in keys:
-            if k in old:
-                os.environ[k] = old[k]
-            else:
-                os.environ.pop(k, None)
-
 
 class AkShareClient:
     """AkShare数据客户端类"""
@@ -59,8 +20,6 @@ class AkShareClient:
         self.name = "AkShare"
         logger.info("AkShare客户端初始化成功")
 
-    @retry(max_attempts=3, delay=1)
-    @timing
     def get_stock_list(self) -> Optional[pd.DataFrame]:
         """
         获取A股股票列表
@@ -120,10 +79,8 @@ class AkShareClient:
 
         except Exception as e:
             logger.error(f"获取股票列表失败: {e}")
-            raise DataFetchError(f"AkShare获取股票列表失败: {e}")
+            raise e
 
-    @retry(max_attempts=3, delay=1)
-    @timing
     def get_stock_daily(
         self,
         symbol: str,
@@ -197,9 +154,8 @@ class AkShareClient:
 
         except Exception as e:
             logger.error(f"获取{symbol}日线数据失败: {e}")
-            raise DataFetchError(f"AkShare获取日线数据失败: {e}")
+            raise
 
-    @retry(max_attempts=3, delay=1)
     def get_stock_realtime(self, symbols: List[str] = None) -> Optional[pd.DataFrame]:
         """
         获取实时行情数据
@@ -214,12 +170,7 @@ class AkShareClient:
             try:
                 df = ak.stock_zh_a_spot_em()
             except Exception as e:
-                if _looks_like_proxy_error(e):
-                    logger.warning("检测到代理错误，尝试绕过系统代理重试 AkShare 请求")
-                    with _temporary_disable_proxies():
-                        df = ak.stock_zh_a_spot_em()
-                else:
-                    raise
+                raise
 
             if df is not None and not df.empty:
                 # 重命名列
@@ -260,14 +211,12 @@ class AkShareClient:
 
         except Exception as e:
             logger.error(f"获取实时行情失败: {e}")
-            raise DataFetchError(f"AkShare获取实时行情失败: {e}")
+            raise
 
-    @retry(max_attempts=3, delay=1)
-    @timing
     def get_stock_intraday(
         self, symbol: str, trade_date: str = None, period: str = "1"
     ) -> Optional[pd.DataFrame]:
-        """获取分钟级分时数据（东方财富分钟K）
+        """获取分钟级分时数据(东方财富分钟K)
 
         Args:
             symbol: 股票代码（支持 000001 / 000001.SZ / 600000.SH）
@@ -308,8 +257,6 @@ class AkShareClient:
             logger.error(f"获取{symbol}分时数据失败: {e}")
             raise
 
-    @retry(max_attempts=3, delay=2)
-    @timing
     def get_stock_financial(self, symbol: str) -> Optional[pd.DataFrame]:
         """
         获取财务报表数据
@@ -333,10 +280,8 @@ class AkShareClient:
 
         except Exception as e:
             logger.error(f"获取{symbol}财务数据失败: {e}")
-            raise DataFetchError(f"AkShare获取财务数据失败: {e}")
+            raise
 
-    @cache_result(ttl=3600)
-    @retry(max_attempts=3, delay=1)
     def get_trade_calendar(
         self, start_date: str = None, end_date: str = None
     ) -> Optional[pd.DataFrame]:
@@ -370,9 +315,8 @@ class AkShareClient:
 
         except Exception as e:
             logger.error(f"获取交易日历失败: {e}")
-            raise DataFetchError(f"AkShare获取交易日历失败: {e}")
+            raise
 
-    @retry(max_attempts=3, delay=1)
     def get_index_daily(
         self, symbol: str = "000001", start_date: str = None, end_date: str = None
     ) -> Optional[pd.DataFrame]:
@@ -425,9 +369,8 @@ class AkShareClient:
 
         except Exception as e:
             logger.error(f"获取指数数据失败: {e}")
-            raise DataFetchError(f"AkShare获取指数数据失败: {e}")
+            raise
 
-    @retry(max_attempts=3, delay=1)
     def get_stock_info(self, symbol: str) -> Optional[Dict[str, Any]]:
         """
         获取股票基本信息
@@ -514,6 +457,5 @@ class AkShareClient:
 
 # 创建全局实例
 akshare_client = AkShareClient()
-
 
 __all__ = ["AkShareClient", "akshare_client"]

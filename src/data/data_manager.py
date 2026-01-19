@@ -1,4 +1,17 @@
-from data import *
+from typing import Any, Dict, List, Optional, Type, TypeVar, Union
+from datetime import datetime
+from uuid import UUID as PyUUID
+import uuid
+from sqlalchemy import and_, desc, asc
+from sqlalchemy.orm import Session, sessionmaker, scoped_session
+from sqlalchemy.sql import text
+from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
+import logging
+from contextlib import contextmanager
+import config
+
+T = TypeVar('T')
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +25,7 @@ class DataManager:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(DataManager, cls).__new__(cls)
-            cls._instance._initialize()
+            cls._instance.initialize()
         return cls._instance
     
     def initialize(self):
