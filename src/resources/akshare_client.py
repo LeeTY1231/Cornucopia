@@ -12,10 +12,6 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 import time
 
-from src.utils.logger import logger
-from src.utils.exceptions import DataFetchError
-from src.utils.decorators import retry, timing, cache_result
-
 
 @contextmanager
 def _temporary_disable_proxies():
