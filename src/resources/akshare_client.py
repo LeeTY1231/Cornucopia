@@ -52,7 +52,7 @@ class AkShareClient:
                             "流通市值": "circ_mv",
                         }
                     )
-
+                    df = df.filter(df["ts_code"].str.endswith(".SH"))
                     # 标准化股票代码格式
                     df["ts_code"] = df["ts_code"].apply(self._format_ts_code)
 

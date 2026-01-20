@@ -13,6 +13,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from src.data.data_manager import DataManager
 from src.resources.akshare_client import akshare_client
 from src.models.stock import Stock
+from src.easypicking.strategy_manager import StrategyManager
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ class StockService:
     def __init__(self):
         """初始化股票服务"""
         self.data_manager = DataManager()
+        self.strategy_manager = StrategyManager()
         self.akshare_client = akshare_client
         logger.info("股票服务初始化成功")
 
@@ -142,6 +144,10 @@ class StockService:
                 "added": 0,
                 "failed": 0,
             }
+
+    def pickstock(self):
+        data = self.akshare_client.get_stock_list()
+        self.strategy_manager.execute_strategy("QuantStockStrategy", data)
 
     def _parse_stock_market(self, stock_id: str) -> Dict[str, str]:
         """

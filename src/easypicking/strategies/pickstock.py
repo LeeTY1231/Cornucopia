@@ -8,7 +8,7 @@ import numpy as np
 from tqdm import tqdm
 import yfinance as yf
 import akshare as ak
-from easypicking.strategy.strategyTemplate import StrategyResult, StrategyTemplate
+from src.easypicking.strategy.strategyTemplate import StrategyResult, StrategyTemplate
 import talib
 from datetime import datetime, timedelta
 import warnings
@@ -74,7 +74,7 @@ class QuantStockStrategy(StrategyTemplate):
         
         try:
             # 获取股票代码列表
-            symbols = data['symbol'].tolist() if 'symbol' in data.columns else []
+            symbols = data['ts_code'].tolist() if 'ts_code' in data.columns else []
             
             if not symbols:
                 return StrategyResult(
@@ -168,6 +168,26 @@ class QuantStockStrategy(StrategyTemplate):
                 score=0,
                 message=f"策略执行失败: {str(e)}"
             )
+    def get_default_parameters(self):
+        """获取策略默认参数"""
+        return {
+            "strategy_type": "multi_factor",
+            "top_n": 10,
+            "min_market_cap": 1e9,
+            "max_pe": 30,
+            "max_pb": 2.5,
+            "min_revenue_growth": 0.1,
+            "min_roe": 0.1,
+            "max_debt_ratio": 0.5,
+            "min_price": 10,
+            "min_volume": 1e6,
+            "weights": {
+                "value": 0.25,
+                "growth": 0.25,
+                "momentum": 0.25,
+                "quality": 0.25
+            }
+        }
         
 class QuantStockSelector:
     """量化选股器"""

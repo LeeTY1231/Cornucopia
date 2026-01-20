@@ -58,3 +58,7 @@ class StrategyTemplate(ABC):
             if required_param not in params:
                 return False
         return True
+    
+    def get_default_parameters(self) -> Dict[str, Any]:
+        """获取策略默认参数"""
+        return self.default_params
