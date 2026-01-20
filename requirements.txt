@@ -18,3 +18,4 @@ easytrader
 easyquotation
 arrow
 xlrd
+ta-lib
