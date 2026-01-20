@@ -1,0 +1,14 @@
+{
+    "rest-client.environmentVariables": {
+        "local": {
+            "runtime-hostname": "http://localhost:5038",
+            "ss-hostname": "http://localhost:5055",
+            "local-nginxservice": "http://localhost:5058"
+        },
+        "localdocker": {
+            "runtime-hostname": "http://localhost:26109",
+            "ss-hostname": "http://localhost:5055",
+            "local-nginxservice": "http://localhost:5058"
+        }
+    }
+}

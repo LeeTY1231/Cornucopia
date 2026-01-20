@@ -1,0 +1,76 @@
+@host-runtime = {{runtime-hostname}}
+
+
+### login
+POST {{host-runtime}}/api/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "itc230006",
+  "password": "QWERINVENTEC,./1234",
+  "dc": "itc",
+  "terminal": "P17-P17-PACKING",
+  "lang": "zh-cn"
+}
+
+
+### snapshot
+POST {{host-runtime}}/api/GlossaryDM/actions/snapshot HTTP/1.1
+Content-Type: application/json
+
+""
+
+
+### GetDM Index
+GET {{host-runtime}}/api/GlossaryDM/byindex?path=execution.unit&indexName=custsn&value=4446R66011&raw=true HTTP/1.1
+Content-Length: application/json
+
+
+### Reload 内存结点数据
+POST {{host-runtime}}/api/GlossaryDM/actions/reload HTTP/1.1
+Content-Type: application/json
+
+{
+    "context": {
+        "execution.mpo": "XCP798000483"
+    },
+    "batchContext": {
+    },
+    "path": "execution.mpo",
+    "timestamp": {{$timestamp}}
+}
+
+
+### 垃圾回收
+POST {{host-runtime}}/api/Management/GC HTTP/1.1
+Content-Type: application/json
+
+
+### 
+GET {{host-runtime}}/api/UtilDataCheck/DataCheck?sn=H053666004&po=XCP794003029&wc=S8
+Content-Type: application/json
+
+{}
+
+
+###
+POST {{host-runtime}}/api/Management/loglevel/Information
+
+
+###
+GET https://ame-mespr-app.ipt.inventec.net/api/GlossaryDM/byindex?path=execution.unit&indexName=custsn&value=12247919/SNYD983YGE00741&raw=true
+
+
+###
+POST {{host-runtime}}/api/Management/InitDMN
+
+
+###
+POST http://localhost:5038/api/Management/InitDMN
+Content-Type: multipart/form-data; boundary=----Boundary
+
+----Boundary
+Content-Disposition: form-data; name="file"; filename="generatesn-ctsn.dmn"
+
+< /home/itc-230006/boxcheck.dmn
+----Boundary--
